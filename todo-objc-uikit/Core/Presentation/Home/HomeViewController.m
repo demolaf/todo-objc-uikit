@@ -54,9 +54,9 @@
 - (void)applyConstraints {
     [NSLayoutConstraint activateConstraints:@[
         [_rootView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
-        [_rootView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor constant:16],
-        [_rootView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor constant:-16],
-        [_rootView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
+        [_rootView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor constant:4],
+        [_rootView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor constant:-4],
+        [_rootView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
     ]];
     
     [NSLayoutConstraint activateConstraints:@[

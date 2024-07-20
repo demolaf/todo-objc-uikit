@@ -6,10 +6,10 @@
 //
 
 #import "TodoListItemTableViewCell.h"
+#import <CoreGraphics/CoreGraphics.h>
 
 @interface TodoListItemTableViewCell()
 
-@property (nonatomic, readwrite) UIView *rootView;
 @property (nonatomic, readwrite) UIStackView *rootHStack;
 @property (nonatomic, readwrite) UIStackView *textsVStack;
 @property (nonatomic, readwrite) UIImageView *icon;
@@ -31,53 +31,83 @@
     return self;
 }
 
-// -(instancetype)initWithTodo:(Todo *)todo {
-//     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kTodoListItemReuseId];
-//
-//     if (self) {
-//         [self initializeSubviews];
-//     }
-//
-//     return self;
-// }
-
 - (void)initializeSubviews {
-    [self setupRootView];
+    [self setupContentView];
     [self setupRootHStack];
+    [self setupIcon];
     [self setupTextsVStack];
     [self setupTitleLabel];
     [self setupContentLabel];
     [self setupTimeLabel];
 }
 
-- (void)setupRootView {
-    _rootView = [[UIView alloc] init];
-    _rootView.layer.cornerRadius = 16;
-    _rootView.layer.masksToBounds = true;
-    _rootView.backgroundColor = UIColor.systemGrayColor;
-    _rootView.translatesAutoresizingMaskIntoConstraints = false;
-    [self addSubview:_rootView];
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    [self applyConstraints];
+}
+
+- (void)applyConstraints {
+    [NSLayoutConstraint activateConstraints:@[
+        [_rootHStack.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:16],
+        [_rootHStack.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:16],
+        [_rootHStack.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-16],
+        [_rootHStack.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-16],
+    ]];
+
+    self.contentView.frame = UIEdgeInsetsInsetRect(self.contentView.frame, UIEdgeInsetsMake(8, 12, 8, 12));
+}
+
+-(void)prepareForReuse {
+    [super prepareForReuse];
+    _icon.image = nil;
+    _titleLabel.text = nil;
+    _contentLabel.text = nil;
+    _timeLabel.text = nil;
+}
+
+- (void)setupContentView {
+    self.contentView.backgroundColor = UIColor.systemBackgroundColor;
+
+    // border
+    self.contentView.layer.cornerRadius = 16;
+    self.contentView.layer.borderColor = UIColor.tertiarySystemFillColor.CGColor;
+    self.contentView.layer.borderWidth = 0.5;
+
+    // shadow
+    self.contentView.layer.geometryFlipped = false;
+    self.contentView.layer.shadowColor = UIColor.systemGrayColor.CGColor;
+    self.contentView.layer.shadowRadius = 5;
+    self.contentView.layer.shadowOpacity = 0.3;
+    self.contentView.layer.shadowOffset = CGSizeMake(2, 4);
 }
 
 - (void)setupRootHStack {
     _rootHStack = [[UIStackView alloc] init];
+    _rootHStack.spacing = 8;
     _rootHStack.axis = UILayoutConstraintAxisHorizontal;
     _rootHStack.distribution = UIStackViewDistributionFill;
     _rootHStack.translatesAutoresizingMaskIntoConstraints = false;
-    [_rootView addSubview:_rootHStack];
+    [self.contentView addSubview:_rootHStack];
 }
 
 - (void)setupTextsVStack {
     _textsVStack = [[UIStackView alloc] init];
+    _textsVStack.spacing = 8;
     _textsVStack.axis = UILayoutConstraintAxisVertical;
     _textsVStack.distribution = UIStackViewDistributionFill;
-    _textsVStack.alignment = UIStackViewAlignmentFill;
+    _textsVStack.alignment = UIStackViewAlignmentLeading;
     _textsVStack.translatesAutoresizingMaskIntoConstraints = false;
     [_rootHStack addArrangedSubview:_textsVStack];
 }
 
 - (void)setupIcon {
-    _icon = [[UIImageView alloc] init];
+    _icon = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"exclamationmark.triangle.fill"]];
+    _icon.contentMode = UIViewContentModeScaleAspectFit;
+    _icon.tintColor = UIColor.systemGrayColor;
+    [NSLayoutConstraint activateConstraints:@[
+        [_icon.widthAnchor constraintEqualToConstant:36],
+    ]];
+    _icon.translatesAutoresizingMaskIntoConstraints = false;
     [_rootHStack addArrangedSubview:_icon];
 }
 
@@ -90,6 +120,7 @@
 - (void)setupContentLabel {
     _contentLabel = [[UILabel alloc] init];
     _contentLabel.text = @"Content";
+    _contentLabel.numberOfLines = 2;
     [_textsVStack addArrangedSubview:_contentLabel];
 }
 
@@ -99,41 +130,8 @@
     [_rootHStack addArrangedSubview:_timeLabel];
 }
 
--(void)prepareForReuse {
-    [super prepareForReuse];
-    _icon.image = nil;
-    _titleLabel.text = nil;
-    _contentLabel.text = nil;
-    _timeLabel.text = nil;
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    [self applyConstraints];
-}
-
-- (void)applyConstraints {
-    [NSLayoutConstraint activateConstraints:@[
-        [_rootView.topAnchor constraintEqualToAnchor:self.topAnchor],
-        [_rootView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-        [_rootView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-        [_rootView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor constant:-16]
-    ]];
-
-    [NSLayoutConstraint activateConstraints:@[
-        [_rootHStack.topAnchor constraintEqualToAnchor:_rootView.topAnchor constant:16],
-        [_rootHStack.leadingAnchor constraintEqualToAnchor:_rootView.leadingAnchor constant:16],
-        [_rootHStack.trailingAnchor constraintEqualToAnchor:_rootView.trailingAnchor constant:-16],
-        [_rootHStack.bottomAnchor constraintEqualToAnchor:_rootView.bottomAnchor constant:-16]
-    ]];
-
-    // [NSLayoutConstraint activateConstraints:@[
-    //     [_icon.widthAnchor constraintEqualToConstant:24],
-    // ]];
-}
-
 - (void)configureWithTodo:(Todo *)todo {
-    _icon = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"exclamationmark.triangle.fill"]];
+    _icon.image = [UIImage systemImageNamed:@"exclamationmark.triangle.fill"];
     _titleLabel.text = todo.title;
     _contentLabel.text = todo.content;
     _timeLabel.text = todo.createdAt.formattedDate;
